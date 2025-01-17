@@ -1,22 +1,21 @@
-name: goreleaser
+name: Release
 
 on:
   push:
     tags:
-      - "v*" # Will trigger only if tag is pushed matching pattern `v*` (Eg: `v0.1.0`)
-
-permissions: write-all
+      - "v*"  # Trigger on tag push (e.g., v0.1.0)
 
 jobs:
-  goreleaser:
+  release:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Set up QEMU
+      - name: Set up QEMU for multi-architecture support
         uses: docker/setup-qemu-action@v2
 
       - name: Set up Go
@@ -28,16 +27,16 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: mathisburger
-          password: ${{ secrets.REG_PW }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}  # Or use another secret for GHCR auth
 
-      - name: Prepare Dependencies
+      - name: Prepare dependencies
         run: |
           make dist
 
-      - name: Check Docker Version
+      - name: Build and push Docker images
         run: |
-          docker version
+          make docker  # Make sure this triggers the GoReleaser build
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
