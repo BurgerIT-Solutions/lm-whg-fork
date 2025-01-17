@@ -1,7 +1,7 @@
 env:
   - GO111MODULE=on
   - CGO_ENABLED=0
-  - GITHUB_ORG=BurgerIT-Solutions
+  - GITHUB_ORG=burgerit-solutions
   - DOCKER_ORG=listmonk
 
 before:
