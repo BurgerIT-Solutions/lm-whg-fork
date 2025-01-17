@@ -1,12 +1,42 @@
 env:
   - GO111MODULE=on
   - CGO_ENABLED=0
-  - GITHUB_ORG=burgerit-solutions
-  - DOCKER_ORG=burgerit-solutions
+  - GITHUB_ORG=BurgerIT-Solutions
+  - DOCKER_ORG=listmonk
 
 before:
   hooks:
     - make build-frontend
+
+builds:
+  - binary: listmonk
+    main: ./cmd
+    goos:
+      - linux
+      - windows
+      - darwin
+      - freebsd
+      - openbsd
+      - netbsd
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+    ldflags:
+      - -s -w -X "main.buildString={{ .Tag }} ({{ .ShortCommit }} {{ .Date }}, {{ .Os }}/{{ .Arch }})" -X "main.versionString={{ .Tag }}"
+
+    hooks:
+      # stuff executables with static assets.
+      post: make pack-bin BIN={{ .Path }}
+
+archives:
+  - format: tar.gz
+    files:
+      - README.md
+      - LICENSE
 
 dockers:
   - use: buildx
@@ -15,14 +45,82 @@ dockers:
     ids:
       - listmonk
     image_templates:
-      - "ghcr.io/burgerit-solutions/lm-whg-fork:latest"
-      - "ghcr.io/burgerit-solutions/lm-whg-fork:{{ .Tag }}"
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-amd64"
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-amd64"
     build_flag_templates:
       - --platform=linux/amd64
-      - --label=org.opencontainers.image.title={{ .ProjectName }}
-      - --label=org.opencontainers.image.description={{ .ProjectName }}
-      - --label=org.opencontainers.image.url=https://github.com/BurgerIT-Solutions/lm-whg-fork
-      - --label=org.opencontainers.image.source=https://github.com/BurgerIT-Solutions/lm-whg-fork
+      - --label=org.opencontainers.image.title=lm-whg-fork
+      - --label=org.opencontainers.image.description=lm-whg-fork
+      - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
+      - --label=org.opencontainers.image.source=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=AGPL-3.0
+    dockerfile: Dockerfile
+    extra_files:
+      - config.toml.sample
+      - docker-entrypoint.sh
+  - use: buildx
+    goos: linux
+    goarch: arm64
+    ids:
+      - listmonk
+    image_templates:
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-arm64v8"
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-arm64v8"
+    build_flag_templates:
+      - --platform=linux/arm64/v8
+      - --label=org.opencontainers.image.title=lm-whg-fork
+      - --label=org.opencontainers.image.description=lm-whg-fork
+      - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
+      - --label=org.opencontainers.image.source=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=AGPL-3.0
+    dockerfile: Dockerfile
+    extra_files:
+      - config.toml.sample
+      - docker-entrypoint.sh
+  - use: buildx
+    goos: linux
+    goarch: arm
+    goarm: 6
+    ids:
+      - listmonk
+    image_templates:
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-armv6"
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-armv6"
+    build_flag_templates:
+      - --platform=linux/arm/v6
+      - --label=org.opencontainers.image.title=lm-whg-fork
+      - --label=org.opencontainers.image.description=lm-whg-fork
+      - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
+      - --label=org.opencontainers.image.source=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
+      - --label=org.opencontainers.image.version={{ .Version }}
+      - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+      - --label=org.opencontainers.image.revision={{ .FullCommit }}
+      - --label=org.opencontainers.image.licenses=AGPL-3.0
+    dockerfile: Dockerfile
+    extra_files:
+      - config.toml.sample
+      - docker-entrypoint.sh
+  - use: buildx
+    goos: linux
+    goarch: arm
+    goarm: 7
+    ids:
+      - listmonk
+    image_templates:
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-armv7"
+      - "ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-armv7"
+    build_flag_templates:
+      - --platform=linux/arm/v7
+      - --label=org.opencontainers.image.title=lm-whg-fork
+      - --label=org.opencontainers.image.description=lm-whg-fork
+      - --label=org.opencontainers.image.url=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
+      - --label=org.opencontainers.image.source=https://github.com/{{ .Env.GITHUB_ORG }}/lm-whg-fork
       - --label=org.opencontainers.image.version={{ .Version }}
       - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
       - --label=org.opencontainers.image.revision={{ .FullCommit }}
@@ -33,8 +131,15 @@ dockers:
       - docker-entrypoint.sh
 
 docker_manifests:
-  - name_template: ghcr.io/burgerit-solutions/lm-whg-fork:latest
+  - name_template: ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest
     image_templates:
-      - ghcr.io/burgerit-solutions/lm-whg-fork:latest
-    platforms:
-      - linux/amd64
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-amd64
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-arm64v8
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-armv6
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:latest-armv7
+  - name_template: ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}
+    image_templates:
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-amd64
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-arm64v8
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-armv6
+      - ghcr.io/{{ .Env.GITHUB_ORG }}/lm-whg-fork:{{ .Tag }}-armv7
