@@ -61,3 +61,7 @@ dockers:
     extra_files:
       - config.toml.sample
       - docker-entrypoint.sh
+docker_manifests:
+  - name_template: ghcr.io/burgerit-solutions/lm-whg-fork:latest
+    image_templates:
+      - ghcr.io/burgerit-solutions/lm-whg-fork:latest
