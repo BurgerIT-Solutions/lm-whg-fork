@@ -18,7 +18,7 @@ dockers:
       - "ghcr.io/burgerit-solutions/lm-whg-fork:latest"
       - "ghcr.io/burgerit-solutions/lm-whg-fork:{{ .Tag }}"
     build_flag_templates:
-      - --platform=linux/amd64,linux/arm64,linux/arm/v7   # Build for multiple architectures
+      - --platform=linux/amd64
       - --label=org.opencontainers.image.title={{ .ProjectName }}
       - --label=org.opencontainers.image.description={{ .ProjectName }}
       - --label=org.opencontainers.image.url=https://github.com/BurgerIT-Solutions/lm-whg-fork
